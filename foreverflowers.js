@@ -1,79 +1,88 @@
+//requisitando os modulos
 const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
 
+//configurando o express para o postman e para usar a pagina
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 const port = 3000;
 
-mongoose.connect("mongodb://127.0.0.1:27017/foreverflowers", 
-{  useNewUrlParser: true,  useUnifiedTopology: true});
+//configurando o banco de dados
+mongoose.connect("mongodb://127.0.0.1:27017/foreverflowers", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
+//criando a model do seu projeto
+const UsuarioSchema = new mongoose.Schema({
+  nome: { type: String },
+  senha: { type: String },
+});
 
-const UsuarioSchema = new mongoose.Schema({  
-    email: { type: String},  
-    senha: { type: Number}});
+const ProdutoArtificial = new mongoose.Schema({
+  idProdutoArtificial: { type: String },
+  descricao: { type: String },
+  fornecedor: { type: String },
+  dataFabri: { type: String },
+  estoque: { type: Number }
+});
 
+const Produto = mongoose.model("Produto", ProdutoArtificial);
 const Usuario = mongoose.model("Usuario", UsuarioSchema);
-    
-const produtoartificial = new mongoose.Schema({
-    id_produtoartificial: { type : String}, 
-    Descricao :  {type : String},
-    Fornecedor : {type : String},
-    DataFabricacao : {type : Date},
-    QuantidadeEstoque : {type : Number}
-});
 
-const produtoartificial = mongoose.model("ProdutoArtificial", produtoartificial);
-
-app.post("/cadastromodelFovererFlowers", async (req, res) =>{
-     const id_produtoartificial = req.body.id_produtoartificial;
-     const Descricao = req.body.Descricao;
-     const Fornecedor = req.body.Fornecedor;
-     const DataFabricacao = req.body.DataFabricacao;
-     const QuantidadeEstoque = req.body.QuantidadeEstoque
-})
-
-const foreverflowers = new produtoartificial({
-    id_produtoartificial: id_produtoartificial,
-    Descricao : Descricao,
-    Fornecedor : Fornecedor,
-    DataFabricacao : DataFabricacao,
-    QuantidadeEstoque : QuantidadeEstoque
-})
-
-try{
-    const foreverflowers =  await produtoartificial.save();
-    res.json({error : null, msg: "Cadastro ok",
-    UsuarioId : newprodutoartificial._id});
-}catch (error) {};
-});
-
-
-
+//configuração dos roteamendos
+//cadastrousuario
 app.post("/cadastrousuario", async (req, res) => {
-    const senha = req.body.senha;
-    const email = req.body.email;})
+  const nome = req.body.nome;
+  const senha = req.body.senha;
 
+  //validação de campos
 
+  const usuario = new Usuario({
+    nome: nome,
+    senha: senha
+  });
 
-const usuario = new Usuario({
-    senha: senha,
-    email: email
+  try {
+    const newUsuario = await usuario.save();
+    res.json({ error: null, msg: "Cadastro ok", UsuarioId: newUsuario._id });
+  } catch (error) {}
 });
 
-try {
-    const newUsuario =  await usuario.save();
-    res.json({ error: null, msg: "Cadastro ok", 
-    UsuarioId: newUsuario._id });
-  } catch (error) {};
+app.post("/cadastroproduto", async (req, res) => {
+  const idProdutoArtificial = req.body.idProdutoArtificial;
+  const descricao = req.body.descricao;
+  const fornecedor = req.body.fornecedor;
+  const dataFabri = req.body.dataFabri;
+  const estoque = req.body.estoque;
 
+  const produto = new Produto({
+    idProdutoArtificial: idProdutoArtificial,
+    descricao: descricao,
+    fornecedor: fornecedor,
+    dataFabri: dataFabri,
+    estoque: estoque,
+  });
 
-  app.get("/", (req, res)=> {
-    //primeira rota de teste
-    res.json({message : "Rota de teste será trocada!!!"});
-    });
-    //escutando a porta
-    app.listen(port, ()=>{
-    console.log(`O backend está rodando na porta ${port}`)
-    });
+  try{
+    const newProduto = await produto.save();
+    res.json({ error: null, msg: "Cadastro ok", UsuarioId: newProduto._id });
+  } catch (error){}
+  
+});
+
+//rota de get de formulario
+app.get("/cadastrousuario", async (req, res) => {
+  res.sendFile(__dirname + "/cadastrousuario.html");
+});
+
+app.get("/cadastroproduto", async (req, res) => {
+  res.sendFile(__dirname + "/cadastroproduto.html");
+});
+
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+});
