@@ -73,6 +73,12 @@ app.post("/cadastroproduto", async (req, res) => {
   } catch (error){}
   
 });
+if(estoque > 26){
+  console.log("O número excedeu o limite de estoque")
+}
+else if(estoque == 0){
+  console.log("O número de produtos no estoque não pode ser nulo, digitar um numero entre 1 e 26");
+}
 
 //rota de get de formulario
 app.get("/cadastrousuario", async (req, res) => {
@@ -80,9 +86,10 @@ app.get("/cadastrousuario", async (req, res) => {
 });
 
 app.get("/cadastroproduto", async (req, res) => {
-  res.sendFile(__dirname + "/cadastroproduto.html");
+  res.sendFile(__dirname + "/foreverflowers.html");
 });
 
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
+
